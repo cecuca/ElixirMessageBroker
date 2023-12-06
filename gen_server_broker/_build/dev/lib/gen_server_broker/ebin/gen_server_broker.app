@@ -1,0 +1,10 @@
+{application,gen_server_broker,
+             [{optional_applications,[]},
+              {applications,[kernel,stdlib,elixir,logger]},
+              {description,"gen_server_broker"},
+              {modules,['Elixir.GenServerBroker',
+                        'Elixir.GenServerBroker.Client',
+                        'Elixir.GenServerBroker.Server']},
+              {registered,[]},
+              {vsn,"0.1.0"},
+              {mod,{'Elixir.GenServerBroker',[]}}]}.
