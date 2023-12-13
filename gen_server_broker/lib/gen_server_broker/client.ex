@@ -4,7 +4,12 @@ defmodule GenServerBroker.Client do
 
   def set_mode() do
 
-
+    our_command = IO.gets("Command>: \n")
+    [main_command | tail] = String.split(our_command, " ", trim: true)
+    case main_command do
+      "send" -> IO.gets("You may call for create_queue|send_message")
+      "receive" -> IO.gets("You may call for subscribe_to_queue")
+    end
 
   end
 
