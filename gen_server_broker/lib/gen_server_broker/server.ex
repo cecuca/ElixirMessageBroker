@@ -1,45 +1,43 @@
 defmodule GenServerBroker.Server do
   use GenServer, restart: :transient
 
+
   def start_link(_) do
-    GenServer.start_link(__MODULE__, :started, name: __MODULE__)
+    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
     end
 
-  def init(:started) do
+  def init(%{}) do
     IO.puts("Server is initialized")
 
-    {:ok, :started}
+    {:ok, %{}}
 
 end
 
-
+#Тут обработчик запроса от клиента на создание очереди
 def handle_call({:create_queue, queue_name}, _from, state) do
 
-  create_queue(queue_name)
-      {:reply, "You have successfully created a queue named #{queue_name}", state}
+  {:ok, pid} = Queue.new(to_atom(queue_name))
+
+  {:reply, "You have successfully created a queue named #{queue_name} with PID of #{pid}", state}
 
 end
 
-def create_queue(queue_name, list_of_subscribers \\ []) do
+def handle_call({:subscribe_to_queue, queue_name, receiver_pid}, _form, state) do
 
-spawn fn -> create_queue_thread(list_of_subscribers, queue_name) end
+  {:ok, pid} = Queue.push(to_atom(queue_name), receiver_pid)
 
-end
-
-defp create_queue_thread(current_state, queue_name) do
- new_state = receive do
-
- end
- new_state |> create_queue_thread(queue_name)
-end
-
-defp update_queue_subscription(queue_list \\ %{}) do
+  {:reply, "You have successfully subscribed to queue named #{queue_name} with PID of #{pid}", state}
 
 end
 
-def handle_call({:subscribe_to_queue, queue_name}, _from, state) do
+handle_call({:send_message_to_queue, queue_name, message}, _from, state) do
+  receiver_pid = Queue.pop(to_atom(queue_name))
+  send(receiver_pid, message)
+  Queue.push(to_atom(queue_name), reciever_pid)
 
-  {:reply, "You have successfully subscribed #{queue_name}", state}
+  {:reply, "You have successfully sended message to the first reciever in #{queue_name}", state}
+
 end
+
 
 end
